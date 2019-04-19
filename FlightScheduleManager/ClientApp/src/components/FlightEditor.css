@@ -1,0 +1,40 @@
+.title-bar {
+  padding: 20px;
+}
+
+.title-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right-justify {
+  float: right;
+}
+
+.right-margin {
+  margin-right: 10px;
+}
+
+.button-column .ms-Button-icon {
+  font-size: 28px;
+}
+
+.flight-crew-bar {
+  padding: 20px 40px;
+}
+
+.flight-crew-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flight-crew-col {
+  padding: 20px 40px;
+  margin: 0 10px;
+}
+
+.separator-pad {
+  padding: 0 20px;
+}

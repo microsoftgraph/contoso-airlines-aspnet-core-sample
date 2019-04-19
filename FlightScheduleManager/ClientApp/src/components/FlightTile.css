@@ -1,0 +1,36 @@
+.flight-tile {
+  height: 200px;
+  float: left;
+  position: relative;
+}
+
+.flight-tile-padded {
+  background: #f3f3f3;
+  position: absolute;
+  padding: 10px;
+  left: 5px;
+  right: 5px;
+  top: 5px;
+  bottom: 5px;
+}
+
+.flight-tile-selectable:hover {
+  cursor: hand;
+  cursor: pointer;
+  opacity: .9;
+}
+
+.flight-crew-insufficient {
+  background: #a80000;
+  color: white;
+}
+
+.flight-crew-minimum {
+  background: #ffb900;
+  color: white;
+}
+
+.flight-crew-optimal {
+  background: #004b1c;
+  color: white;
+}

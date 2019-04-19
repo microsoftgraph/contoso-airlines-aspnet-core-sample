@@ -1,0 +1,8 @@
+.flight-editor-container {
+  height: 80vh;
+  width: 80vw;
+}
+
+.shimmerContainer {
+  display: flex;
+}

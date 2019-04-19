@@ -1,0 +1,80 @@
+.schedule-grid {
+  padding: 20px 40px;
+}
+
+.crew-row {
+  padding-bottom: 10px;
+}
+
+.crew-col {
+  padding-top: 7px;
+  padding-bottom: 10px;
+}
+
+.crew-col:hover {
+  cursor: hand;
+  cursor: pointer;
+  opacity: .9;
+}
+
+.time-slot-col {
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.availability-row {
+  border-top: 2px solid lightgray;
+}
+
+.availability-col {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.availability-block {
+  color: white;
+  text-align: center;
+}
+
+.in-flight {
+  background-color: #bad80a;
+}
+
+.in-flight-top {
+  padding-top: 8px;
+  border-top: 2px solid #107c10;
+}
+
+.in-flight-left {
+  border-left: 2px solid #107c10;
+}
+
+.in-flight-bottom {
+  padding-bottom: 8px;
+  border-bottom: 2px solid #107c10;
+}
+
+.in-flight-right {
+  border-right: 2px solid #107c10;
+}
+
+.free {
+  background-color: #004b1c;
+}
+
+.tentative {
+  background-color: #ffb900;
+}
+
+.busy {
+  background-color: #a80000;
+}
+
+.oof {
+  background-color: #5c005c
+}
+
+.workingElsewhere {
+  background-color: #002050;
+}
