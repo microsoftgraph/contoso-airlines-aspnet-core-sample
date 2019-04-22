@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using FlightScheduleManager.Graph;
 using FlightScheduleManager.Models;
 using Microsoft.Graph;
 
@@ -17,36 +18,19 @@ namespace FlightScheduleManager.Controllers
           [FromQuery] string start,
           [FromQuery] string end)
         {
-            return new List<Event> {
-              new Event
-              {
-                Subject = "Test event",
-                Start = new DateTimeTimeZone { DateTime = "2019-04-17T10:00:00", TimeZone = "Pacific Standard Time" },
-                End = new DateTimeTimeZone { DateTime = "2019-04-17T11:00:00", TimeZone = "Pacific Standard Time" },
-                Categories = new List<string> { "Assigned Flight "}
-              },
-              new Event
-              {
-                Subject = "Test event",
-                Start = new DateTimeTimeZone { DateTime = "2019-04-17T10:30:00", TimeZone = "Pacific Standard Time" },
-                End = new DateTimeTimeZone { DateTime = "2019-04-17T11:30:00", TimeZone = "Pacific Standard Time" },
-                Categories = new List<string> { "Assigned Flight "}
-              },
-              new Event
-              {
-                Subject = "Test event",
-                Start = new DateTimeTimeZone { DateTime = "2019-04-17T10:30:00", TimeZone = "Pacific Standard Time" },
-                End = new DateTimeTimeZone { DateTime = "2019-04-17T11:30:00", TimeZone = "Pacific Standard Time" },
-                Categories = new List<string> { "Assigned Flight "}
-              },
-              new Event
-              {
-                Subject = "Test event",
-                Start = new DateTimeTimeZone { DateTime = "2019-04-17T10:30:00", TimeZone = "Pacific Standard Time" },
-                End = new DateTimeTimeZone { DateTime = "2019-04-17T11:30:00", TimeZone = "Pacific Standard Time" },
-                Categories = new List<string> { "Assigned Flight "}
-              }
-            };
+            var token = GraphService.ValidateBearerToken(authorization);
+            if (string.IsNullOrEmpty(token))
+            {
+                return new UnauthorizedResult();
+            }
+
+            var events = await GraphService.GetCalendarView(token, start, end);
+            if (events != null)
+            {
+              return events.CurrentPage.ToList();
+            }
+
+            return null;
         }
     }
 }

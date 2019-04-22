@@ -25,7 +25,7 @@ namespace FlightScheduleManager.Models
         public DateTime DepartureTime { get; set; }
         public List<string> FlightCrew { get; set; }
 
-        public static Flight FromListItem(DriveItem driveItem, ListItem listItem)
+        public static Flight FromListItem(ListItem listItem)
         {
             var jsonFields = JsonConvert.SerializeObject(listItem.Fields.AdditionalData);
             var fields = JsonConvert.DeserializeObject<ListFields>(jsonFields);
@@ -41,7 +41,7 @@ namespace FlightScheduleManager.Models
             var flight = new Flight
             {
                 IdType = FlightIdType.SharePointList,
-                Id = $"{driveItem.ParentReference.DriveId}/{driveItem.Id}",
+                Id = $"{listItem.DriveItem.ParentReference.DriveId}/{listItem.DriveItem.Id}",
                 Number = (int)fields.FlightNumber,
                 Description = fields.Description,
                 DepartureTime = fields.DepartureTime,

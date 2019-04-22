@@ -77,8 +77,8 @@ export class CalendarView extends Component {
     console.log(`Checking ${time.format()}`);
 
     for (var i = 0; i < events.length; i++) {
-      let eventStart = moment(events[i].start.dateTime);
-      let eventEnd = moment(events[i].end.dateTime);
+      let eventStart = moment.utc(events[i].start.dateTime);
+      let eventEnd = moment.utc(events[i].end.dateTime);
 
       console.log(`Checking event ${events[i].subject}: start: ${eventStart.format()}, end: ${eventEnd.format()}`)
 

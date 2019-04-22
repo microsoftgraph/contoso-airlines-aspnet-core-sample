@@ -7,6 +7,7 @@ using Microsoft.Graph;
 using Microsoft.Graph.Auth;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -136,14 +137,11 @@ namespace FlightScheduleManager.Graph
 
             try
             {
-                var docs = await GetDriveItems();
+                var items = await GetFlightListItems();
 
-                foreach(var doc in docs.CurrentPage)
+                foreach (var item in items.CurrentPage)
                 {
-                    var listItem = await appClient.Drives[doc.ParentReference.DriveId].Items[doc.Id]
-                        .ListItem.Request().GetAsync();
-
-                    flights.Add(Flight.FromListItem(doc, listItem));
+                    flights.Add(Flight.FromListItem(item));
                 }
             }
             catch (Exception ex)
@@ -151,7 +149,10 @@ namespace FlightScheduleManager.Graph
                 Console.WriteLine($"GetAllFlightsFromList - Exception: {ex.ToString()}");
             }
 
-            return flights;
+            // SharePoint lists do not support OrderBy via Graph, so sort
+            // results here
+            var sortedFlights = flights.OrderBy(f => f.DepartureTime).ToList();
+            return sortedFlights;
         }
 
         public static async Task<List<Flight>> GetOpenFlightsFromList(string userEmail)
@@ -160,14 +161,11 @@ namespace FlightScheduleManager.Graph
 
             try
             {
-                var docs = await GetDriveItems();
+                var items = await GetFlightListItems();
 
-                foreach(var doc in docs.CurrentPage)
+                foreach (var item in items.CurrentPage)
                 {
-                    var listItem = await appClient.Drives[doc.ParentReference.DriveId].Items[doc.Id]
-                        .ListItem.Request().GetAsync();
-
-                    var flight = Flight.FromListItem(doc, listItem);
+                    var flight = Flight.FromListItem(item);
 
                     if (flight.FlightCrew.Count < 3 && !flight.FlightCrew.Contains(userEmail))
                     {
@@ -180,7 +178,10 @@ namespace FlightScheduleManager.Graph
                 Console.WriteLine($"GetOpenFlightsFromList - Exception: {ex.ToString()}");
             }
 
-            return flights;
+            // SharePoint lists do not support OrderBy via Graph, so sort
+            // results here
+            var sortedFlights = flights.OrderBy(f => f.DepartureTime).ToList();
+            return sortedFlights;
         }
 
         public static async Task<List<Flight>> GetAssignedFlights(string userToken)
@@ -248,19 +249,32 @@ namespace FlightScheduleManager.Graph
             var spIds = updatedFlight.Id.Split('/');
 
             await appClient.Drives[spIds[0]].Items[spIds[1]].ListItem.Fields.Request().UpdateAsync(flightAttendantField);
-            /*
-            {
-                "fields": {
-                    "Flight_x0020_AttendantsLookupId@odata.type": "Collection(Edm.String)",
-                    "Flight_x0020_AttendantsLookupId": [
-                        "13"
-                    ]
-                }
-            }
-             */
         }
 
-        private static async Task<IDriveItemChildrenCollectionPage> GetDriveItems()
+        public static async Task<IUserCalendarViewCollectionPage> GetCalendarView(string userToken, string start, string end)
+        {
+            try
+            {
+                // Use QueryOption to pass "custom" query parameters
+                // ?startDateTime=2019-04-22T08:00:00&endDateTime=2019-04-29T08:00:00
+                var queryOptions = new List<QueryOption> {
+                    new QueryOption("startDateTime", start),
+                    new QueryOption("endDatetime", end)
+                };
+
+                return await userClient.Me.CalendarView
+                    .Request(queryOptions)
+                    .Select("subject,start,end,categories")
+                    .Top(25).GetAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetCalendarView - Exception: {ex.ToString()}");
+                return null;
+            }
+        }
+
+        private static async Task<IListItemsCollectionPage> GetFlightListItems()
         {
             // Get the root site
             var rootSite = await appClient.Sites["root"].Request().GetAsync();
@@ -271,27 +285,28 @@ namespace FlightScheduleManager.Graph
                 .Request().GetAsync();
 
             // Get the flight list
-            var siteDrives = await appClient.Sites[adminSite.Id]
-                .Drives.Request().Top(50).GetAsync();
+            var lists = await appClient.Sites[adminSite.Id]
+                .Lists.Request().Top(50).GetAsync();
 
-            Drive flightDrive = null;
-            foreach (var drive in siteDrives.CurrentPage)
+            foreach(var list in lists.CurrentPage)
             {
-                if (drive.Name == flightList)
+                if (list.Name == flightList)
                 {
-                    flightDrive = drive;
-                    break;
+                    // Get items from the list
+                    return await appClient.Sites[adminSite.Id].Lists[list.Id]
+                        .Items.Request()
+                        // Filter on Departure Time field, only get items with a departure
+                        // later than today
+                        .Filter($"fields/Departure_x0020_Time ge '{DateTime.UtcNow.Date.ToString("yyyy-MM-ddTHH:mm:ss")}'")
+                        // Expand the fields (where all custom fields are returned) and
+                        // the driveItem (to make it easier to update this item if needed) properties
+                        .Expand("driveItem,fields")
+                        .GetAsync();
                 }
             }
 
-            if (flightDrive == null)
-            {
-                Console.WriteLine($"GetAllFlightsFromList - Could not find list named {flightList}");
-                return null;
-            }
-
-            return await appClient.Drives[flightDrive.Id].Root.Children
-                .Request().Top(50).GetAsync();
+            Console.WriteLine($"GetFlightListItems - Could not find list named {flightList}");
+            return null;
         }
 
         private static async Task<IGroupMembersCollectionWithReferencesPage> GetGroupMembers(string groupName)
