@@ -192,9 +192,12 @@ namespace FlightScheduleManager.Graph
                 // Get the Flight Attendants group members
                 var flightAttendants = await GetGroupMembers("Flight Attendants");
 
+                var today = DateTime.UtcNow.Date;
+
                 // Get the flight events from the user's calendar
                 var flightEvents = await userClient.Me.Events.Request()
-                    .Filter("categories/any(c:c eq 'Assigned Flight')")
+                    .Filter($"start/dateTime ge '{today.ToString("yyyy-MM-ddTHH:mm:ss")}' and categories/any(c:c eq 'Assigned Flight')")
+                    .OrderBy("start/dateTime ASC")
                     .Expand("extensions($filter=id eq 'com.contoso.flightData')")
                     .Top(50)
                     .GetAsync();
