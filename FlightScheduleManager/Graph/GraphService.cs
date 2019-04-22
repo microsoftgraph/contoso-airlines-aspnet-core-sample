@@ -197,6 +197,7 @@ namespace FlightScheduleManager.Graph
 
                 // Get the flight events from the user's calendar
                 var flightEvents = await userClient.Me.Events.Request()
+                    .WithUserAssertion(new UserAssertion(userToken))
                     .Filter($"start/dateTime ge '{today.ToString("yyyy-MM-ddTHH:mm:ss")}' and categories/any(c:c eq 'Assigned Flight')")
                     .OrderBy("start/dateTime ASC")
                     .Expand("extensions($filter=id eq 'com.contoso.flightData')")
@@ -264,6 +265,7 @@ namespace FlightScheduleManager.Graph
 
                 return await userClient.Me.CalendarView
                     .Request(queryOptions)
+                    .WithUserAssertion(new UserAssertion(userToken))
                     .Select("subject,start,end,categories")
                     .Top(25).GetAsync();
             }
@@ -272,6 +274,36 @@ namespace FlightScheduleManager.Graph
                 Console.WriteLine($"GetCalendarView - Exception: {ex.ToString()}");
                 return null;
             }
+        }
+
+        public static async Task<ICalendarGetScheduleCollectionPage> GetSchedules(string userToken, string start, string end)
+        {
+            try
+            {
+                var startTime = new DateTimeTimeZone { DateTime = start, TimeZone = "UTC" };
+                var endTime = new DateTimeTimeZone { DateTime = end, TimeZone = "UTC" };
+
+                var flightAttendants = await GetGroupMembers("Flight Attendants");
+
+                var flightAttendantEmails = new List<string>();
+
+                foreach (var flightAttendant in flightAttendants)
+                {
+                    flightAttendantEmails.Add((flightAttendant as User).Mail);
+                }
+
+                return await userClient.Me.Calendar
+                    .GetSchedule(flightAttendantEmails, endTime, startTime)
+                    .Request()
+                    .WithUserAssertion(new UserAssertion(userToken))
+                    .PostAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetSchedules - Exception: {ex.ToString()}");
+                return null;
+            }
+
         }
 
         private static async Task<IListItemsCollectionPage> GetFlightListItems()

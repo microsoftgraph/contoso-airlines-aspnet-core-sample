@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using FlightScheduleManager.Graph;
 using FlightScheduleManager.Models;
 using Microsoft.Graph;
 
@@ -18,44 +19,27 @@ namespace FlightScheduleManager.Controllers
           [FromQuery] string start,
           [FromQuery] string end)
         {
-            var schedules = new List<Schedule>();
-
-            var scheduleInfos = new List<ScheduleInformation>
+            var token = GraphService.ValidateBearerToken(authorization);
+            if (string.IsNullOrEmpty(token))
             {
-                new ScheduleInformation
-                {
-                    ScheduleId = "adelev@m365x930361.onmicrosoft.com",
-                    AvailabilityView = "0104000022",
-                    ScheduleItems = new List<ScheduleItem>
-                    {
-                        new ScheduleItem {
-                          Start = new DateTimeTimeZone { DateTime = "2019-04-16T09:00:00", TimeZone = "UTC" },
-                          End = new DateTimeTimeZone { DateTime = "2019-04-16T10:00:00", TimeZone = "UTC" },
-                          Status = FreeBusyStatus.Busy
-                        }
-                    }
-                },
-                new ScheduleInformation
-                {
-                    ScheduleId = "alexw@m365x930361.onmicrosoft.com",
-                    AvailabilityView = "0400300201",
-                    ScheduleItems = new List<ScheduleItem>
-                    {
-                        new ScheduleItem {
-                          Start = new DateTimeTimeZone { DateTime = "2019-04-16T09:00:00", TimeZone = "UTC" },
-                          End = new DateTimeTimeZone { DateTime = "2019-04-16T10:00:00", TimeZone = "UTC" },
-                          Status = FreeBusyStatus.Busy
-                        }
-                    }
-                }
-            };
-
-            foreach (var val in scheduleInfos)
-            {
-              schedules.Add(new Schedule(val));
+                return new UnauthorizedResult();
             }
 
-            return schedules;
+            var scheduleInfos = await GraphService.GetSchedules(token, start, end);
+
+            if (scheduleInfos != null)
+            {
+                var schedules = new List<Schedule>();
+
+                foreach (var schedule in scheduleInfos.CurrentPage)
+                {
+                    schedules.Add(new Schedule(schedule));
+                }
+
+                return schedules;
+            }
+
+            return null;
         }
     }
 }
