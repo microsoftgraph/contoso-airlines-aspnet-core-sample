@@ -102,7 +102,6 @@ export class CalendarView extends Component {
     switch (events.length) {
       case 0:
         return <div className="ms-Grid-col ms-sm9 ms-font-s" />
-        break;
       case 2:
         colSize = 'ms-sm4';
         break;
