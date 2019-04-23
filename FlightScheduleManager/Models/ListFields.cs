@@ -17,21 +17,21 @@ namespace FlightScheduleManager.Models
         [JsonProperty(PropertyName = "Description0")]
         public string Description { get; set; }
 
-        [JsonProperty(PropertyName = "Flight_x0020_Number")]
+        [JsonProperty(PropertyName = "FlightNumber")]
         public float FlightNumber { get; set; }
 
         public List<LookupField> Pilots { get; set; }
 
-        [JsonProperty(PropertyName = "Flight_x0020_Attendants")]
+        [JsonProperty(PropertyName = "FlightAttendants")]
         public List<LookupField> FlightAttendants { get; set; }
 
-        [JsonProperty(PropertyName = "Catering_x0020_Liaison")]
+        [JsonProperty(PropertyName = "CateringLiaison")]
         public string CateringLiaison { get; set; }
 
-        [JsonProperty(PropertyName = "Departure_x0020_Time")]
+        [JsonProperty(PropertyName = "DepartureTime")]
         public DateTime DepartureTime { get; set; }
 
-        [JsonProperty(PropertyName = "Departure_x0020_Gate")]
+        [JsonProperty(PropertyName = "DepartureGate")]
         public string DepartureGate { get; set; }
     }
 }

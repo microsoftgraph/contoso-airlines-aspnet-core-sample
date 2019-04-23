@@ -242,8 +242,8 @@ namespace FlightScheduleManager.Graph
             {
                 AdditionalData = new Dictionary<string,object>
                 {
-                    { "Flight_x0020_AttendantsLookupId@odata.type", "Collection(Edm.String)" },
-                    { "Flight_x0020_AttendantsLookupId", crewLookupIds }
+                    { "FlightAttendantsLookupId@odata.type", "Collection(Edm.String)" },
+                    { "FlightAttendantsLookupId", crewLookupIds }
                 }
             };
 
@@ -329,7 +329,7 @@ namespace FlightScheduleManager.Graph
                         .Items.Request()
                         // Filter on Departure Time field, only get items with a departure
                         // later than today
-                        .Filter($"fields/Departure_x0020_Time ge '{DateTime.UtcNow.Date.ToString("yyyy-MM-ddTHH:mm:ss")}'")
+                        .Filter($"fields/DepartureTime ge '{DateTime.UtcNow.Date.ToString("yyyy-MM-ddTHH:mm:ss")}'")
                         // Expand the fields (where all custom fields are returned) and
                         // the driveItem (to make it easier to update this item if needed) properties
                         .Expand("driveItem,fields")
