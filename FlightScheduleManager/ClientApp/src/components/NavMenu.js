@@ -31,9 +31,7 @@ export class NavMenu extends Component {
             <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
             <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
               <ul className="navbar-nav flex-grow">
-                <mgt-msal-provider
-                  client-id={process.env.REACT_APP_AZURE_APP_ID}
-                  authority={process.env.REACT_APP_AZURE_AUTHORITY} />
+
                 <mgt-login/>
               </ul>
             </Collapse>

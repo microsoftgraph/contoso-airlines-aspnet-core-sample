@@ -346,7 +346,7 @@ namespace FlightScheduleManager.Graph
             var group = await appClient.Groups.Request()
                 .Filter($"displayName eq '{groupName}'").GetAsync();
 
-            if (group == null)
+            if (group == null || group.CurrentPage.Count <= 0)
             {
                 Console.WriteLine($"GetGroupMembers - No group named {groupName} found.");
                 return null;
