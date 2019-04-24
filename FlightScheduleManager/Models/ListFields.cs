@@ -14,7 +14,7 @@ namespace FlightScheduleManager.Models
 
     public class ListFields
     {
-        [JsonProperty(PropertyName = "Description0")]
+        [JsonProperty(PropertyName = "Description")]
         public string Description { get; set; }
 
         [JsonProperty(PropertyName = "FlightNumber")]
