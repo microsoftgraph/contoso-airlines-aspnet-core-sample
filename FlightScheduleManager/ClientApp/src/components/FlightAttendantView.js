@@ -90,6 +90,7 @@ export class FlightAttendantView extends Component {
           <Separator/>
           <h2 className="ms-font-xxl">Upcoming flights</h2>
           <AssignedFlights refresh={this.state.refreshLists} />
+          <Separator/>
           <h2 className="ms-font-xxl">Available flights</h2>
           <AvailableFlights refresh={this.state.refreshLists} onFlightSelected={this.onAvailableFlightSelected.bind(this)}/>
         </Stack>
