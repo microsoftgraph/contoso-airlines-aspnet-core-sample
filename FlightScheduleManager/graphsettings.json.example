@@ -1,0 +1,20 @@
+{
+  "tenantId": "YOUR_TENANT_ID",
+  "onBehalfClientSettings": {
+    "appId": "YOUR_ON_BEHALF_APP_ID",
+    "appSecret": "YOUR_ON_BEHALF_SECRET",
+    "redirect": "https://localhost:5001",
+    "scopes": "User.Read,Calendars.Read"
+  },
+  "appOnlyClientSettings": {
+    "appId": "YOUR_APP_ONLY_APP_ID",
+    "appSecret": "YOUR_APP_ONLY_SECRET"
+  },
+  "flightAdminSite": "FlightTeamAdmin",
+  "flightList": "Flights",
+  "sharePointLookupMap": {
+    "adelev@contoso.com": "12",
+    "alexw@contoso.com": "15",
+    "emilyb@contoso.com": "14"
+  }
+}
