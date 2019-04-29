@@ -17,7 +17,7 @@ namespace FlightScheduleManager.Controllers
             [FromHeader] string authorization,
             [FromQuery] string queryType)
         {
-            var token = GraphService.ValidateBearerToken(authorization);
+            var token = await GraphService.ValidateBearerToken(authorization);
             if (string.IsNullOrEmpty(token))
             {
                 return new UnauthorizedResult();
@@ -51,7 +51,7 @@ namespace FlightScheduleManager.Controllers
             [FromBody] Flight updatedFlight,
             [FromQuery] string updateType)
         {
-            var token = GraphService.ValidateBearerToken(authorization);
+            var token = await GraphService.ValidateBearerToken(authorization);
             if (string.IsNullOrEmpty(token))
             {
                 return new UnauthorizedResult();

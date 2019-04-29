@@ -14,7 +14,7 @@ namespace FlightScheduleManager.Controllers
         // GET /api/users
         public async Task<ActionResult<ScheduleUser>> GetScheduleUser([FromHeader] string authorization)
         {
-            var token = GraphService.ValidateBearerToken(authorization);
+            var token = await GraphService.ValidateBearerToken(authorization);
             if (string.IsNullOrEmpty(token))
             {
                 return new UnauthorizedResult();

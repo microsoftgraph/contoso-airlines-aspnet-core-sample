@@ -18,7 +18,7 @@ namespace FlightScheduleManager.Controllers
           [FromQuery] string start,
           [FromQuery] string end)
         {
-            var token = GraphService.ValidateBearerToken(authorization);
+            var token = await GraphService.ValidateBearerToken(authorization);
             if (string.IsNullOrEmpty(token))
             {
                 return new UnauthorizedResult();

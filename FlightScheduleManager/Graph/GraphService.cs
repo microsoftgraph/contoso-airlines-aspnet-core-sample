@@ -70,21 +70,30 @@ namespace FlightScheduleManager.Graph
             }
         }
 
-        public static string ValidateBearerToken(string authorization)
+        public static async Task<string> ValidateBearerToken(string authorization)
         {
             try
             {
+                // Make sure that the Authorization header is in the correct format
                 var authHeader = AuthenticationHeaderValue.Parse(authorization);
 
+                // Make sure it uses the Bearer scheme
                 if (authHeader.Scheme.ToLower() != "bearer")
                 {
                     return null;
                 }
 
-                return authHeader.Parameter;
+                // Simple test, can we get user's profile with this token?
+                var user = await userClient.Me.Request()
+                    .WithUserAssertion(new UserAssertion(authHeader.Parameter))
+                    .GetAsync();
+
+                return user == null ? null : authHeader.Parameter;
             }
+            // Return null, causing controllers to return 401
             catch (FormatException) { return null; }
             catch (ArgumentNullException) { return null; }
+            catch (ServiceException) { return null; }
         }
 
         public static async Task<ScheduleUser> GetUserInfo(string userToken)
@@ -92,6 +101,7 @@ namespace FlightScheduleManager.Graph
             var scheduleUser = new ScheduleUser{ EmailAddress = "", IsFlightAdmin = false, IsFlightAttendant = false };
             try
             {
+                // Get the user
                 var user = await userClient.Me.Request()
                     .WithUserAssertion(new UserAssertion(userToken))
                     .GetAsync();
@@ -137,8 +147,10 @@ namespace FlightScheduleManager.Graph
 
             try
             {
+                // Get the items from the SharePoint list
                 var items = await GetFlightListItems();
 
+                // Parse the items into flights
                 foreach (var item in items.CurrentPage)
                 {
                     flights.Add(Flight.FromListItem(item));
@@ -161,12 +173,16 @@ namespace FlightScheduleManager.Graph
 
             try
             {
+                // Get the items from the SharePoint list
                 var items = await GetFlightListItems();
 
                 foreach (var item in items.CurrentPage)
                 {
+                    // Parse the item into a flight
                     var flight = Flight.FromListItem(item);
 
+                    // Remove full flights and any flights that the user is already
+                    // assigned to
                     if (flight.FlightCrew.Count < 3 && !flight.FlightCrew.Contains(userEmail))
                     {
                         flights.Add(flight);
@@ -204,6 +220,7 @@ namespace FlightScheduleManager.Graph
                     .Top(50)
                     .GetAsync();
 
+                // Parse the events into flights
                 foreach (var flightEvent in flightEvents.CurrentPage)
                 {
                     flights.Add(Flight.FromEvent(flightEvent, flightAttendants.CurrentPage));
@@ -229,6 +246,8 @@ namespace FlightScheduleManager.Graph
         {
             var crewLookupIds = new List<string>();
 
+            // Updating Person fields in SharePoint require a lookup ID,
+            // which is unique to each site.
             foreach (var email in updatedFlight.FlightCrew)
             {
                 var lookup = GetUserLookupId(email);
@@ -238,6 +257,7 @@ namespace FlightScheduleManager.Graph
                 }
             }
 
+            // Format the field as a lookup field
             var flightAttendantField = new FieldValueSet
             {
                 AdditionalData = new Dictionary<string,object>
@@ -280,11 +300,14 @@ namespace FlightScheduleManager.Graph
         {
             try
             {
+                // Set the start and end times of the availability window
                 var startTime = new DateTimeTimeZone { DateTime = start, TimeZone = "UTC" };
                 var endTime = new DateTimeTimeZone { DateTime = end, TimeZone = "UTC" };
 
+                // Get all flight attendants
                 var flightAttendants = await GetGroupMembers("Flight Attendants");
 
+                // Build a list of flight attendant emails
                 var flightAttendantEmails = new List<string>();
 
                 foreach (var flightAttendant in flightAttendants)
@@ -292,6 +315,7 @@ namespace FlightScheduleManager.Graph
                     flightAttendantEmails.Add((flightAttendant as User).Mail);
                 }
 
+                // Call getSchedule API to get availability map
                 return await userClient.Me.Calendar
                     .GetSchedule(flightAttendantEmails, endTime, startTime)
                     .Request()
