@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE in the project root for license information.
+
 using FlightScheduleManager.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.FileExtensions;
@@ -31,8 +34,12 @@ namespace FlightScheduleManager.Graph
 
             // Initialize the Graph client to make calls on behalf of the user
             var userClientCreds = new ClientCredential(oboSettings["appSecret"]);
-            var oboMsalClient = OnBehalfOfProvider.CreateClientApplication(oboSettings["appId"],
-                oboSettings["redirect"], userClientCreds, null, graphConfig["tenantId"]);
+            var oboMsalClient = OnBehalfOfProvider.CreateClientApplication(
+                oboSettings["appId"],
+                oboSettings["redirect"],
+                userClientCreds, null,
+                graphConfig["tenantId"]);
+
             var oboAuthProvider = new OnBehalfOfProvider(oboMsalClient, scopesArray);
 
             userClient = new GraphServiceClient(oboAuthProvider);
