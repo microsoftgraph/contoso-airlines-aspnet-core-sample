@@ -60,21 +60,21 @@
 }
 
 .free {
-  background-color: #004b1c;
+  background-color: #6bb700;
 }
 
 .tentative {
-  background-color: #ffb900;
+  background-color: #ffaa44;
 }
 
 .busy {
-  background-color: #a80000;
+  background-color: #c50f1f;
 }
 
 .oof {
-  background-color: #5c005c
+  background-color: #b4009e
 }
 
 .workingElsewhere {
-  background-color: #002050;
+  background-color: #8a8886;
 }
