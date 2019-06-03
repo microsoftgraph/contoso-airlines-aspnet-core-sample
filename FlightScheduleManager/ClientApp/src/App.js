@@ -5,8 +5,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
-import { Providers } from 'microsoft-graph-toolkit/dist/es6/Providers';
-import { MsalProvider } from 'microsoft-graph-toolkit/dist/es6/providers/MsalProvider';
+import { Providers, MsalProvider } from '@microsoft/mgt';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 
 initializeIcons();
