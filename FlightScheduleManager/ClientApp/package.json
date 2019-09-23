@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@microsoft/mgt": "^0.1.1",
+    "@microsoft/mgt": "^0.2.2",
     "bootstrap": "^4.3.1",
     "jquery": "^3.4.0",
     "moment": "^2.24.0",
