@@ -51,9 +51,12 @@ namespace FlightScheduleManager.Models
                 FlightCrew = new List<string>()
             };
 
-            foreach (var flightAttendant in fields.FlightAttendants)
+            if (fields.FlightAttendants != null)
             {
-                flight.FlightCrew.Add(flightAttendant.Email.ToLower());
+                foreach (var flightAttendant in fields.FlightAttendants)
+                {
+                    flight.FlightCrew.Add(flightAttendant.Email.ToLower());
+                }
             }
 
             return flight;

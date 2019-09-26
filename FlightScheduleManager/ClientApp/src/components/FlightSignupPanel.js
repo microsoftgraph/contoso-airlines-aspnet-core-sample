@@ -4,8 +4,9 @@
 import React, { Component } from 'react';
 import { Stack } from 'office-ui-fabric-react/lib/Stack';
 import { Separator } from 'office-ui-fabric-react/lib/Separator';
+import '@microsoft/mgt';
 import { Utilities } from '../utilities/utils';
-import { CalendarView } from './CalendarView';
+import './FlightSignupPanel.css';
 
 /*
  * This component is the content for the slide-in panel
@@ -30,7 +31,14 @@ export class FlightSignupPanel extends Component {
         })}
         </Stack>
         <Separator alignContent="center">Your calendar</Separator>
-        <CalendarView departureTime={this.props.flight.departureTime} />
+        <mgt-agenda
+          group-by-day
+          date={this.props.flight.departureTime}
+          days="1">
+          <template data-type="no-data">
+            <div className="ms-font-l no-events">No events today</div>
+          </template>
+        </mgt-agenda>
       </Stack>
     );
   }

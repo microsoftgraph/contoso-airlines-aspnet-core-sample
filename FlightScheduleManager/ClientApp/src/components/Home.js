@@ -3,8 +3,7 @@
 
 import React, { Component } from 'react';
 import { Jumbotron } from 'reactstrap';
-import { Providers } from 'microsoft-graph-toolkit/dist/es6/Providers';
-import { ProviderState } from 'microsoft-graph-toolkit/dist/es6/providers/IProvider';
+import { Providers, ProviderState } from '@microsoft/mgt';
 import { FlightManagerView } from './FlightManagerView';
 import { FlightAttendantView } from './FlightAttendantView';
 import { Utilities } from '../utilities/utils';

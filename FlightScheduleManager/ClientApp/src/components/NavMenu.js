@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import 'microsoft-graph-toolkit';
+import '@microsoft/mgt';
 import './NavMenu.css';
 
 export class NavMenu extends Component {
