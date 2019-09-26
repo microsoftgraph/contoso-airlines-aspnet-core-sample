@@ -22,7 +22,7 @@ namespace FlightScheduleManager.Graph
         private static GraphServiceClient appClient;
         private static string flightAdminSite;
         private static string flightList;
-        private static IConfigurationSection lookupIds;
+        private static Dictionary<string, string> userLookupIds;
 
         static GraphService()
         {
@@ -56,8 +56,6 @@ namespace FlightScheduleManager.Graph
 
             flightAdminSite = graphConfig["flightAdminSite"];
             flightList = graphConfig["flightList"];
-
-            lookupIds = graphConfig.GetSection("sharePointLookupMap");
         }
 
         private static IConfigurationRoot LoadAppSettings()
@@ -257,7 +255,7 @@ namespace FlightScheduleManager.Graph
             // which is unique to each site.
             foreach (var email in updatedFlight.FlightCrew)
             {
-                var lookup = GetUserLookupId(email);
+                var lookup = await GetUserLookupId(email);
                 if (!string.IsNullOrEmpty(lookup))
                 {
                     crewLookupIds.Add(lookup);
@@ -387,9 +385,71 @@ namespace FlightScheduleManager.Graph
                 .Members.Request().GetAsync();
         }
 
-        private static string GetUserLookupId(string userEmail)
+        private static async Task<string> GetUserLookupId(string userEmail)
         {
-            return lookupIds[userEmail];
+            if (userLookupIds == null)
+            {
+                await BuildUserLookupDictionary();
+            }
+
+            return userLookupIds[userEmail];
+        }
+
+        private static async Task BuildUserLookupDictionary()
+        {
+            try
+            {
+                userLookupIds = new Dictionary<string, string>();
+
+                // Get the root site
+                var rootSite = await appClient.Sites["root"].Request().GetAsync();
+
+                // Get the flight admin site
+                var adminSite = await appClient
+                    .Sites[$"{rootSite.SiteCollection.Hostname}:/sites/{flightAdminSite}"]
+                    .Request().GetAsync();
+
+                // Get all lists including the "system" lists
+                // This is needed to see the User Information List
+                var lists = await appClient.Sites[adminSite.Id].Lists.Request()
+                    .Select(x => new { x.System, x.DisplayName, x.Id }).GetAsync();
+
+                // Find the User Information List
+                Microsoft.Graph.List userList = null;
+                foreach(var list in lists.CurrentPage)
+                {
+                    if (string.Compare(list.DisplayName, "User Information List", true) == 0)
+                    {
+                        userList = list;
+                        break;
+                    }
+                }
+
+                if (userList == null)
+                {
+                    return;
+                }
+
+                var users = await appClient.Sites[adminSite.Id].Lists[userList.Id].Items.Request()
+                    .Expand(x => new { x.Fields }).GetAsync();
+
+                foreach (var user in users)
+                {
+                    object email = null;
+                    if (user.Fields.AdditionalData.TryGetValue("EMail", out email))
+                    {
+                        if (!userLookupIds.TryAdd((email as string).ToLower(), user.Id))
+                        {
+                            Console.WriteLine($"Duplicate entry for {email}, ignored.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                userLookupIds = null;
+            }
         }
     }
 }
