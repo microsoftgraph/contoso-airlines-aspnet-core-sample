@@ -11,10 +11,5 @@
     "appSecret": "YOUR_APP_ONLY_SECRET"
   },
   "flightAdminSite": "FlightTeamAdmin",
-  "flightList": "Flights",
-  "sharePointLookupMap": {
-    "adelev@contoso.com": "12",
-    "alexw@contoso.com": "15",
-    "emilyb@contoso.com": "14"
-  }
+  "flightList": "Flights"
 }
