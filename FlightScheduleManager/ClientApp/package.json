@@ -5,7 +5,7 @@
   "dependencies": {
     "@microsoft/mgt": "^1.0.0",
     "bootstrap": "^4.3.1",
-    "jquery": "^3.4.0",
+    "jquery": "^3.5.0",
     "moment": "^2.24.0",
     "office-ui-fabric-react": "^6.166.1",
     "react": "^16.8.6",
