@@ -1,5 +1,9 @@
 # Contoso Airlines Flight Schedule Manager
 
+## IMPORTANT
+
+**This sample has been archived and is no longer being maintained. For a more current sample using Microsoft Graph from ASP.NET Core, please see https://github.com/microsoftgraph/msgraph-training-aspnet-core.**
+
 ## Prerequisites
 
 You should already have the [Contoso Airlines Flight Team Provisioning Sample](https://github.com/microsoftgraph/contoso-airlines-azure-functions-sample) sample setup in your tenant.
